@@ -1,0 +1,28 @@
+name: Test HTML
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install tidy
+        run: |
+          sudo apt-get update
+          sudo apt-get install tidy
+      - name: Get changed HTML files
+        uses: tj-actions/verify-changed-files@v1
+        id: changed-files
+        with:
+          files: |
+            **/*.html
+      - name: Run tidy on changed HTML files
+        run: |
+          for file in "${changed-files.outputs.files[@]}"; do
+            tidy -e -q --show-errors 0 "$file"
+          done
